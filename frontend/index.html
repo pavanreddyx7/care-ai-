@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Care AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+      .aurora-blob { position:absolute; filter:blur(100px); opacity:0.35; z-index:0; animation:moveBlob 25s infinite alternate ease-in-out; }
+      .blob-1 { top:-10%;left:-10%;width:500px;height:500px;background:#4f46e5;animation-delay:0s; }
+      .blob-2 { bottom:-10%;right:-10%;width:600px;height:600px;background:#0ea5e9;animation-delay:-5s; }
+      .blob-3 { top:40%;left:30%;width:400px;height:400px;background:#10b981;animation-delay:-12s; }
+      @keyframes moveBlob { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(80px,40px) scale(1.1)} 100%{transform:translate(-40px,80px) scale(0.9)} }
+      .glass { background:rgba(255,255,255,0.05);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1); }
+      .pro-text strong { font-weight:700;color:#1e40af;background-color:#dbeafe;padding:2px 6px;border-radius:6px; }
+      .pro-text ul,ol { list-style:disc;padding-left:1.25rem;margin-top:0.5rem; }
+      .pro-text li { margin-bottom:0.5rem; }
+      .scrollbar-hide::-webkit-scrollbar { display:none; }
+      .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+      .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      /* Chat panels — account for fixed bottom tab bar on mobile */
+      .chat-panel { height: calc(100vh - 56px); }
+      .doc-chat-panel { height: calc(100vh - 80px); }
+      @media (max-width: 767px) {
+        .chat-panel { height: calc(100vh - 136px); }
+        .doc-chat-panel { height: calc(100vh - 152px); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
