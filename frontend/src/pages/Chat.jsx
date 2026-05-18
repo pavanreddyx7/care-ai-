@@ -2,6 +2,34 @@ import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import { marked } from 'marked'
 
+function AiMessage({ m }) {
+  // Structured response with medical + herbal split into two cards
+  if (m.medical && m.herbal) {
+    return (
+      <div className="w-full max-w-[95%] space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+            <p className="text-xs font-bold text-blue-600 uppercase tracking-wide mb-2">🩺 Medical</p>
+            <div className="pro-text text-sm text-slate-700"
+              dangerouslySetInnerHTML={{ __html: marked.parse(m.medical) }} />
+          </div>
+          <div className="bg-green-50 border border-green-100 rounded-2xl p-4">
+            <p className="text-xs font-bold text-green-600 uppercase tracking-wide mb-2">🌿 Herbal</p>
+            <div className="pro-text text-sm text-slate-700"
+              dangerouslySetInnerHTML={{ __html: marked.parse(m.herbal) }} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+  // Plain AI message (greeting, error, etc.)
+  return (
+    <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-none text-sm bg-slate-100 text-slate-800">
+      <div className="pro-text" dangerouslySetInnerHTML={{ __html: marked.parse(m.text || '') }} />
+    </div>
+  )
+}
+
 export default function Chat() {
   const [messages, setMessages] = useState([{ role: 'ai', text: 'Hello! I am your AI Doctor. How can I help you today?' }])
   const [input, setInput] = useState('')
@@ -17,10 +45,12 @@ export default function Chat() {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }])
     setLoading(true)
     try {
-      const history = messages.filter(m => m.role !== 'system').map(m => ({ user: m.role === 'user' ? m.text : '', ai: m.role === 'ai' ? m.text : '' }))
+      const history = messages.filter(m => m.role !== 'system').map(m => ({
+        user: m.role === 'user' ? m.text : '',
+        ai: m.role === 'ai' ? (m.text || '') : ''
+      }))
       const { data } = await axios.post('/api/chat', { query: userMsg, language: 'English', history })
-      const reply = `**Medical:** ${data.medical}\n\n**Herbal:** ${data.herbal}`
-      setMessages(prev => [...prev, { role: 'ai', text: reply }])
+      setMessages(prev => [...prev, { role: 'ai', medical: data.medical, herbal: data.herbal }])
     } catch {
       setMessages(prev => [...prev, { role: 'ai', text: 'Sorry, I could not process that.' }])
     }
@@ -37,17 +67,21 @@ export default function Chat() {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'}`}>
-                {m.role === 'ai'
-                  ? <div className="pro-text" dangerouslySetInnerHTML={{ __html: marked.parse(m.text) }} />
-                  : m.text}
-              </div>
+            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start w-full'}`}>
+              {m.role === 'user' ? (
+                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-none text-sm bg-blue-600 text-white">
+                  {m.text}
+                </div>
+              ) : (
+                <AiMessage m={m} />
+              )}
             </div>
           ))}
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-slate-100 px-4 py-3 rounded-2xl rounded-bl-none text-slate-500 text-sm animate-pulse">Thinking...</div>
+              <div className="bg-slate-100 px-4 py-3 rounded-2xl rounded-bl-none text-slate-500 text-sm animate-pulse">
+                Thinking...
+              </div>
             </div>
           )}
           <div ref={bottomRef} />
