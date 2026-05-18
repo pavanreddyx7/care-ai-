@@ -6,17 +6,17 @@ function AiMessage({ m }) {
   // Structured response with medical + herbal split into two cards
   if (m.medical && m.herbal) {
     return (
-      <div className="w-full max-w-[95%] space-y-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+      <div style={{ width: '100%' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 260px' }} className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
             <p className="text-xs font-bold text-blue-600 uppercase tracking-wide mb-2">🩺 Medical</p>
             <div className="pro-text text-sm text-slate-700"
-              dangerouslySetInnerHTML={{ __html: marked.parse(m.medical) }} />
+              dangerouslySetInnerHTML={{ __html: marked.parse(m.medical || '') }} />
           </div>
-          <div className="bg-green-50 border border-green-100 rounded-2xl p-4">
+          <div style={{ flex: '1 1 260px' }} className="bg-green-50 border border-green-100 rounded-2xl p-4">
             <p className="text-xs font-bold text-green-600 uppercase tracking-wide mb-2">🌿 Herbal</p>
             <div className="pro-text text-sm text-slate-700"
-              dangerouslySetInnerHTML={{ __html: marked.parse(m.herbal) }} />
+              dangerouslySetInnerHTML={{ __html: marked.parse(m.herbal || '') }} />
           </div>
         </div>
       </div>
